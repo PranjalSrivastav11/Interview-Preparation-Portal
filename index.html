@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrepPulse — Interview Preparation Portal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+
+
+  <!-- STAGE 1 & 2: INITIAL LOADING SCREEN -> CLICKABLE START SCREEN -->
+  <div id="splash-overlay" class="splash-overlay">
+    <div class="splash-card">
+      <!-- Stage 1: Animated Loading Box -->
+      <div id="loading-box">
+        <div class="spinner"></div>
+        <h2 style="font-size:1.4rem; margin-bottom:6px;">Initializing PrepPulse Portal...</h2>
+        <p id="loading-status" style="font-size:0.88rem; color:#cbd5e1; margin-bottom:14px;">
+          Loading Topic-Wise MCQs, Mock Timer &amp; Analytics...
+        </p>
+        <div class="progress-track" style="background:rgba(255,255,255,0.2); height:10px;">
+          <div id="loader-fill" class="progress-fill" style="width:0%; background:#38bdf8;"></div>
+        </div>
+        <p id="loader-pct" style="font-size:0.85rem; font-weight:700; margin-top:8px; color:#38bdf8;">0%</p>
+      </div>
+
+      <!-- Stage 2: Clickable Welcome / Launch Screen (Appears after loading hits 100%) -->
+      <div id="start-box" class="hidden">
+        <span style="font-size:0.75rem; font-weight:700; padding:4px 12px; border-radius:99px; background:rgba(56,189,248,0.2); color:#38bdf8;">
+         
+        </span>
+        <h1 style="font-size:1.8rem; font-weight:800; margin:12px 0 6px;">Interview Preparation Portal</h1>
+        <p style="font-size:0.9rem; color:#cbd5e1;">
+          Real-time MCQ practice, subject-wise filtering, bookmarks, timed mock assessments, and score tracking.
+        </p>
+        <div class="feature-pills">
+          <span class="feature-pill">✓ Topic-wise Questions</span>
+          <span class="feature-pill">✓ Search &amp; Filter</span>
+          <span class="feature-pill">✓ Bookmarks ★</span>
+          <span class="feature-pill">✓ Timed Mock Test</span>
+          <span class="feature-pill">✓ Progress Tracking</span>
+        </div>
+        <button type="button" id="enter-portal-btn" class="start-btn" onclick="enterMainPortal()">
+          🚀 Click to Start Portal →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 3: FINAL MAIN PORTAL -->
+  <header>
+    <div class="container nav-bar">
+      <div class="logo" id="portal-title">PrepPulse • Interview Portal</div>
+      <div class="nav-links">
+        <button type="button" class="tab-btn active" id="tab-practice" onclick="switchTab('practice')">Practice &amp; Dashboard</button>
+        <button type="button" class="tab-btn" id="tab-mock" onclick="switchTab('mock')">Timed Mock Test</button>
+        <button type="button" id="toggle-add-btn" onclick="toggleAddForm()">+ Add MCQ</button>
+        <button type="button" id="theme-btn" onclick="toggleTheme()">🌙 Dark Mode</button>
+        <button type="button" id="replay-splash-btn" onclick="replayLoadingScreen()">🔄 Splash Screen</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 1. PROGRESS TRACKING DASHBOARD -->
+    <section class="stats-grid">
+      <div class="card">
+        <div class="muted">Overall Progress</div>
+        <div class="stat-value" id="stat-solved">0 / 0</div>
+        <div class="progress-track"><div class="progress-fill" id="stat-bar" style="width:0%"></div></div>
+      </div>
+      <div class="card">
+        <div class="muted">Practice Accuracy</div>
+        <div class="stat-value" id="stat-accuracy">0%</div>
+        <div class="muted" id="stat-correct-text">0 correct attempts</div>
+      </div>
+      <div class="card">
+        <div class="muted">Saved Bookmarks ★</div>
+        <div class="stat-value" id="stat-bookmarks">0</div>
+        <div class="muted">Starred for revision</div>
+      </div>
+      <div class="card">
+        <div class="muted">Last Mock Test Score</div>
+        <div class="stat-value" id="stat-mock-score">--</div>
+        <div class="muted" id="stat-cutoff-text">Pass Cutoff: 60%</div>
+      </div>
+    </section>
+
+    <!-- Topic-Wise Progress Bars -->
+    <section class="card">
+      <div class="q-header">
+        <strong>Topic-Wise Progress (Click a topic to filter)</strong>
+        <button type="button" onclick="resetProgress()">Reset Progress</button>
+      </div>
+      <div class="topic-grid" id="topic-bars"></div>
+    </section>
+
+    <!-- ADD NEW MCQ FORM (For Live Demo) -->
+    <section id="add-form-box" class="card hidden">
+      <h4 style="margin-bottom:8px;">Add New Interview MCQ</h4>
+      <div class="filter-bar">
+        <input type="text" id="new-q" placeholder="Enter question prompt..." />
+        <select id="new-topic">
+          <option value="DSA">DSA</option><option value="AI & ML">AI &amp; ML</option>
+          <option value="DBMS">DBMS</option><option value="OS & CN">OS &amp; CN</option>
+          <option value="OOPs">OOPs</option><option value="Aptitude">Aptitude</option>
+        </select>
+        <select id="new-diff">
+          <option value="Easy">Easy</option><option value="Medium">Medium</option><option value="Hard">Hard</option>
+        </select>
+        <input type="text" id="new-company" placeholder="CompanyTag" value="TCS" />
+      </div>
+      <div class="options-grid" style="margin-bottom:8px;">
+        <input type="text" id="opt-0" placeholder="Option A" /><input type="text" id="opt-1" placeholder="Option B" />
+        <input type="text" id="opt-2" placeholder="Option C" /><input type="text" id="opt-3" placeholder="Option D" />
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="new-exp" placeholder="Concept explanation..." />
+        <select id="new-ans">
+          <option value="0">Correct: A</option><option value="1">Correct: B</option>
+          <option value="2">Correct: C</option><option value="3">Correct: D</option>
+        </select>
+        <button type="button" class="btn-primary" onclick="addNewQuestion()">Save Question</button>
+      </div>
+    </section>
+
+    <!-- 2. MCQ PRACTICE & SEARCH/FILTER -->
+    <section id="practice-section">
+      <div class="card filter-bar">
+        <input type="text" id="search-input" placeholder="🔍 Search topic, question, or company (TCS, Amazon)..." oninput="renderPractice()" />
+        <select id="topic-filter" onchange="renderPractice()"><option value="ALL">All Topics</option></select>
+        <select id="diff-filter" onchange="renderPractice()">
+          <option value="ALL">All Difficulties</option><option value="Easy">Easy</option>
+          <option value="Medium">Medium</option><option value="Hard">Hard</option>
+        </select>
+        <select id="status-filter" onchange="renderPractice()">
+          <option value="ALL">All Questions</option><option value="BOOKMARKED">★ Bookmarked</option>
+          <option value="SOLVED">✓ Solved</option><option value="UNSOLVED">Unsolved</option>
+        </select>
+        <button type="button" onclick="clearFilters()">Clear</button>
+      </div>
+      <div id="question-list"></div>
+    </section>
+
+    <!-- 3. TIMED MOCK TEST & SCORE CALCULATION -->
+    <section id="mock-section" class="hidden">
+      <div class="card">
+        <div class="q-header">
+          <div>
+            <h3>Timed Mock Test Simulator</h3>
+            <p class="muted" id="mock-scheme-text">Marking: +4 Correct, -1 Wrong • Auto-submits on timer end</p>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <select id="mock-topic">
+              <option value="ALL">All Topics</option><option value="DSA">DSA</option><option value="AI & ML">AI &amp; ML</option>
+              <option value="DBMS">DBMS</option><option value="OS & CN">OS &amp; CN</option><option value="OOPs">OOPs</option>
+            </select>
+            <select id="mock-mins">
+              <option value="2">2 Mins (Demo)</option><option value="5" selected>5 Mins</option><option value="10">10 Mins</option>
+            </select>
+            <span class="timer-box" id="timer-display">05:00</span>
+            <button type="button" class="btn-primary" id="start-mock-btn" onclick="startMockTest()">▶ Start Test</button>
+            <button type="button" class="btn-primary hidden" id="submit-mock-btn" onclick="submitMockTest()">Submit Test</button>
+          </div>
+        </div>
+      </div>
+      <div id="mock-result-box" class="card hidden"></div>
+      <div id="mock-questions-list"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
